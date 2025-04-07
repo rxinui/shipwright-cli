@@ -51,7 +51,7 @@ teardown() {
 	buildrun_name=$(random_name)
 
 	# ensure that shp build create does not give an error when a build_name is specified
-	run shp build create ${build_name} --source-url=url --output-image=image
+	run shp build create ${build_name} --source-git-url=url --output-image=image
 	assert_success
 
 	# ensure that shp buildrun create does not give an error when a buildrun_name is specified
