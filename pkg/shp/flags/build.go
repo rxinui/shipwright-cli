@@ -102,6 +102,10 @@ func SanitizeBuildSpec(b *buildv1beta1.BuildSpec) {
 		}
 	}
 
+	if len(b.Env) == 0 {
+		b.Env = nil
+	}
+
 	if b.Timeout != nil && b.Timeout.Duration == 0 {
 		b.Timeout = nil
 	}

@@ -59,7 +59,7 @@ func TestBuildSpecFromFlags(t *testing.T) {
 
 	cmd := &cobra.Command{}
 	flags := cmd.PersistentFlags()
-	spec, dockerfile, _ := BuildSpecFromFlags(flags)
+	spec, dockerfile, builderImage := BuildSpecFromFlags(flags)
 
 	t.Run(".spec.source", func(_ *testing.T) {
 		err := flags.Set(SourceURLFlag, expected.Source.Git.URL)
@@ -74,7 +74,7 @@ func TestBuildSpecFromFlags(t *testing.T) {
 		err = flags.Set(SourceCredentialsSecretFlag, *expected.Source.Git.CloneSecret)
 		g.Expect(err).To(o.BeNil())
 
-		err = flags.Set(SourceOciArtifactPullSecretFlag, *expected.Source.OCIArtifact.PullSecret)
+		err = flags.Set(SourceOCIArtifactPullSecretFlag, *expected.Source.OCIArtifact.PullSecret)
 		g.Expect(err).To(o.BeNil())
 
 		g.Expect(expected.Source).To(o.Equal(spec.Source), "spec.source")
@@ -94,6 +94,12 @@ func TestBuildSpecFromFlags(t *testing.T) {
 		err := flags.Set(DockerfileFlag, "test-dockerfile")
 		g.Expect(err).To(o.BeNil())
 		g.Expect(*dockerfile).To(o.Equal("test-dockerfile"))
+	})
+
+	t.Run("builderImage", func(_ *testing.T) {
+		err := flags.Set(BuilderImageFlag, "test-builder-image")
+		g.Expect(err).To(o.BeNil())
+		g.Expect(*builderImage).To(o.Equal("test-builder-image"))
 	})
 
 	t.Run(".spec.output", func(_ *testing.T) {

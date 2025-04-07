@@ -29,11 +29,11 @@ const (
 	// SourceCredentialsSecretFlag command-line flag.
 	SourceCredentialsSecretFlag = "source-git-clone-secret" // #nosec G101
 	// SourceBundleImageFlag command-line flag
-	SourceOciArtifactImageFlag = "source-oci-artifact-image"
+	SourceOCIArtifactImageFlag = "source-oci-artifact-image"
 	// SourceBundlePruneFlag command-line flag
-	SourceOciArtifactPruneFlag = "source-oci-artifact-prune"
-	// SourceOciArtifactPullSecretFlag command-line flag
-	SourceOciArtifactPullSecretFlag = "source-oci-artifact-pull-secret" // #nosec G101
+	SourceOCIArtifactPruneFlag = "source-oci-artifact-prune"
+	// SourceOCIArtifactPullSecretFlag command-line flag
+	SourceOCIArtifactPullSecretFlag = "source-oci-artifact-pull-secret" // #nosec G101
 	// StrategyKindFlag command-line flag.
 	StrategyKindFlag = "strategy-kind"
 	// StrategyNameFlag command-line flag.
@@ -119,9 +119,9 @@ func sourceFlags(flags *pflag.FlagSet, source *buildv1beta1.Source) {
 
 	flags.StringVar(
 		&source.OCIArtifact.Image,
-		SourceOciArtifactImageFlag,
+		SourceOCIArtifactImageFlag,
 		"",
-		"source bundle image location, e.g. ghcr.io/shipwright-io/sample-go/source-bundle:latest",
+		"source OCI artifact image reference, e.g. ghcr.io/shipwright-io/sample-go/source-bundle:latest",
 	)
 	flags.StringVar(
 		&source.OCIArtifact.Image,
@@ -129,26 +129,26 @@ func sourceFlags(flags *pflag.FlagSet, source *buildv1beta1.Source) {
 		"",
 		"source bundle image location, e.g. ghcr.io/shipwright-io/sample-go/source-bundle:latest",
 	)
-	flags.MarkDeprecated("source-bundle-image", fmt.Sprintf("please use --%s instead", SourceOciArtifactImageFlag))
+	flags.MarkDeprecated("source-bundle-image", fmt.Sprintf("please use --%s instead", SourceOCIArtifactImageFlag))
 
 	flags.StringVar(
 		source.OCIArtifact.PullSecret,
-		SourceOciArtifactPullSecretFlag,
+		SourceOCIArtifactPullSecretFlag,
 		"",
-		"name of the secret with credentials to access the oci artifact image, e.g. registry credentials",
+		"name of the secret with credentials to access the OCI artifact image, e.g. registry credentials",
 	)
 
 	flags.Var(
 		pruneOptionFlag{ref: source.OCIArtifact.Prune},
-		SourceOciArtifactPruneFlag,
-		fmt.Sprintf("source bundle prune option, either %s, or %s", buildv1beta1.PruneNever, buildv1beta1.PruneAfterPull),
+		SourceOCIArtifactPruneFlag,
+		fmt.Sprintf("source OCI artifact image prune option, either %s, or %s", buildv1beta1.PruneNever, buildv1beta1.PruneAfterPull),
 	)
 	flags.Var(
 		pruneOptionFlag{ref: source.OCIArtifact.Prune},
 		"source-bundle-prune",
 		fmt.Sprintf("source bundle prune option, either %s, or %s", buildv1beta1.PruneNever, buildv1beta1.PruneAfterPull),
 	)
-	flags.MarkDeprecated("source-bundle-prune", fmt.Sprintf("please use --%s instead", SourceOciArtifactPruneFlag))
+	flags.MarkDeprecated("source-bundle-prune", fmt.Sprintf("please use --%s instead", SourceOCIArtifactPruneFlag))
 }
 
 // strategyFlags flags for ".spec.strategy".
@@ -217,7 +217,7 @@ func builderImageFlag(flags *pflag.FlagSet, builderImage *string) {
 		"",
 		"path to dockerfile relative to repository",
 	)
-	flags.MarkDeprecated("builder-image", "builder-image parameter is deprecated")
+	flags.MarkDeprecated("builder-image", "builder-image flag is deprecated, and will be removed in a future release. Use an appropriate parameter for the build strategy instead.")
 }
 
 // timeoutFlags register a timeout flag as time.Duration instance.
@@ -248,6 +248,15 @@ func serviceAccountFlags(flags *pflag.FlagSet, sa *string) {
 		"",
 		"Kubernetes service-account name",
 	)
+	var ignore bool
+	flags.BoolVar(
+		&ignore,
+		ServiceAccountGenerateFlag,
+		false,
+		"generate a Kubernetes service-account for the build",
+	)
+	flags.MarkDeprecated("sa-generate", fmt.Sprintf("this flag has no effect, please use --%s for service account", ServiceAccountNameFlag))
+
 }
 
 // envFlags registers flags for adding corev1.EnvVars.
