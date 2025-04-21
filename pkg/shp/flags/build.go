@@ -44,7 +44,7 @@ func BuildSpecFromFlags(flags *pflag.FlagSet) (*buildv1beta1.BuildSpec, *string,
 			TTLAfterFailed:    &metav1.Duration{},
 			TTLAfterSucceeded: &metav1.Duration{},
 		},
-		NodeSelector: make(map[string]string),
+		NodeSelector: map[string]string{},
 	}
 
 	sourceFlags(flags, spec.Source)
