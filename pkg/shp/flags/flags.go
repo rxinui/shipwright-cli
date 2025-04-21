@@ -64,6 +64,8 @@ const (
 	RetentionTTLAfterFailedFlag = "retention-ttl-after-failed"
 	// RetentionTTLAfterSucceededFlag command-line flag.
 	RetentionTTLAfterSucceededFlag = "retention-ttl-after-succeeded"
+	// NodeFlag command-line flag.
+	NodeFlag = "node"
 )
 
 // sourceFlags flags for ".spec.source"
@@ -257,6 +259,11 @@ func serviceAccountFlags(flags *pflag.FlagSet, sa *string) {
 	)
 	flags.MarkDeprecated("sa-generate", fmt.Sprintf("this flag has no effect, please use --%s for service account", ServiceAccountNameFlag))
 
+}
+
+// ... registers flags for adding node selector labels
+func buildNodeFlags(flags *pflag.FlagSet, nodeSelectorLabels map[string]string) {
+	flags.Var(NewMapValue(nodeSelectorLabels), NodeFlag, "set of key-value pairs corresponds of node's labels to match")
 }
 
 // envFlags registers flags for adding corev1.EnvVars.

@@ -189,6 +189,7 @@ type BuildSpec struct {
 	// to be overridden. Must only contain volumes that exist in the corresponding BuildStrategy
 	// +optional
 	Volumes []BuildVolume `json:"volumes,omitempty"`
+
 }
 
 // BuildVolume is a volume that will be mounted in build pod during build step
