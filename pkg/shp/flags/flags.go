@@ -65,7 +65,7 @@ const (
 	// RetentionTTLAfterSucceededFlag command-line flag.
 	RetentionTTLAfterSucceededFlag = "retention-ttl-after-succeeded"
 	// NodeSelectorFlag command-line flag.
-	NodeSelectorFlag = "node"
+	NodeSelectorFlag = "node-selector"
 )
 
 // sourceFlags flags for ".spec.source"
@@ -261,8 +261,8 @@ func serviceAccountFlags(flags *pflag.FlagSet, sa *string) {
 
 }
 
-// buildNodeFlags registers flags for adding BuildSpec.NodeSelector
-func buildNodeFlags(flags *pflag.FlagSet, nodeSelectorLabels map[string]string) {
+// buildNodeSelectorFlags registers flags for adding BuildSpec.NodeSelector
+func buildNodeSelectorFlags(flags *pflag.FlagSet, nodeSelectorLabels map[string]string) {
 	flags.Var(NewMapValue(nodeSelectorLabels), NodeSelectorFlag, "set of key-value pairs that correspond to labels of a node to match")
 }
 

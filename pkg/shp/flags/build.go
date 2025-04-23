@@ -56,7 +56,7 @@ func BuildSpecFromFlags(flags *pflag.FlagSet) (*buildv1beta1.BuildSpec, *string,
 	imageLabelsFlags(flags, spec.Output.Labels)
 	imageAnnotationsFlags(flags, spec.Output.Annotations)
 	buildRetentionFlags(flags, spec.Retention)
-	buildNodeFlags(flags, spec.NodeSelector)
+	buildNodeSelectorFlags(flags, spec.NodeSelector)
 	var dockerfile, builderImage string
 	dockerfileFlags(flags, &dockerfile)
 	builderImageFlag(flags, &builderImage)
