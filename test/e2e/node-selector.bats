@@ -13,6 +13,8 @@ teardown() {
 	run kubectl delete buildruns.shipwright.io --all
 }
 
+scheduler_name="dolphinscheduler"
+
 @test "shp build create --node-selector single label" {
     # generate random names for our build
 	build_name=$(random_name)
@@ -48,6 +50,24 @@ teardown() {
 
     assert_output --partial '"kubernetes.io/hostname":"node-1"'
     assert_output --partial '"kubernetes.io/os":"linux"'
+}
+
+@test "shp build create --scheduler-name" {
+    # generate random names for our build
+	build_name=$(random_name)
+
+    # create a Build with node selector 
+    run shp build create ${build_name} --source-git-url=https://github.com/shipwright-io/sample-go --output-image=my-fake-image --scheduler-name=${scheduler_name}
+    assert_success
+
+    # ensure that the build was successfully created
+	assert_output --partial "Created build \"${build_name}\""
+
+    # get the jsonpath of Build object .spec.nodeSelector
+	run kubectl get builds.shipwright.io/${build_name} -ojsonpath="{.spec.schedulerName}"
+	assert_success
+
+    assert_output "${scheduler_name}"
 }
 
 @test "shp buildrun create --node-selector single label" {
@@ -89,6 +109,25 @@ teardown() {
     assert_output --partial '"kubernetes.io/os":"linux"'
 }
 
+@test "shp buildrun create --scheduler-name" {
+    # generate random names for our buildrun
+	buildrun_name=$(random_name)
+	build_name=$(random_name)
+
+    # create a Build with node selector 
+    run shp buildrun create ${buildrun_name} --buildref-name=${build_name} --scheduler-name=${scheduler_name}
+    assert_success
+
+    # ensure that the build was successfully created
+	assert_output --partial "BuildRun created \"${buildrun_name}\" for Build \"${build_name}\""
+
+    # get the jsonpath of Build object .spec.nodeSelector
+	run kubectl get buildruns.shipwright.io/${buildrun_name} -ojsonpath="{.spec.schedulerName}"
+	assert_success
+
+    assert_output "${scheduler_name}"
+}
+
 
 @test "shp build run --node-selector set" {
     # generate random names for our build
@@ -111,4 +150,27 @@ teardown() {
 	run kubectl get buildruns.shipwright.io -ojsonpath='{.items[*].spec.nodeSelector}' 
 	assert_success
     assert_output --partial '"kubernetes.io/hostname":"node-1"'
+}
+
+@test "shp build run --scheduler-name" {
+    # generate random names for our build
+	build_name=$(random_name)
+
+    # create a Build with node selector 
+    run shp build create ${build_name} --source-git-url=https://github.com/shipwright-io/sample-go --output-image=my-fake-image
+    assert_success
+
+    # ensure that the build was successfully created
+	assert_output --partial "Created build \"${build_name}\""
+
+    # get the build object
+	run kubectl get builds.shipwright.io/${build_name}
+	assert_success
+
+    run shp build run ${build_name} --scheduler-name=${scheduler_name}
+
+    # get the jsonpath of Build object .spec.nodeSelector
+	run kubectl get buildruns.shipwright.io -ojsonpath='{.items[*].spec.schedulerName}' 
+	assert_success
+    assert_output --partial "${scheduler_name}"
 }
